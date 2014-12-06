@@ -1,5 +1,3 @@
-#include "kanban.h"
-
 #ifndef __SIMULATION__
 #define __SIMULATION__
 
