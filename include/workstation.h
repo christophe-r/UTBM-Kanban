@@ -5,8 +5,8 @@
 #include "structures.h"
 
 
-Workstation *create_workstation(char *name);
-void *workstation_thread(void *param);
+Workstation *create_workstation(char *name, unsigned short int processDelay);
+void *workstation_thread(void *p_data);
 
 void link_workstations(Workstation *workstation, Workstation *parent);
 

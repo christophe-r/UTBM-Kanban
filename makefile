@@ -10,6 +10,7 @@ SRC_DIR=./src
 
 OBJS=main.o \
 	 factory.o \
+	 kanban.o \
 	 workstation.o \
 	 simulation.o
 
@@ -37,12 +38,17 @@ $(OBJ_DIR)/factory.o: $(SRC_DIR)/factory.c $(INC_DIR)/factory.h $(INC_DIR)/struc
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo 
 
+$(OBJ_DIR)/kanban.o: $(SRC_DIR)/kanban.c $(INC_DIR)/kanban.h $(INC_DIR)/structures.h
+	@echo "Compiling $< :"
+	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
+	@echo 
+
 $(OBJ_DIR)/workstation.o: $(SRC_DIR)/workstation.c $(INC_DIR)/workstation.h $(INC_DIR)/structures.h
 	@echo "Compiling $< :"
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo 
 
-$(OBJ_DIR)/simulation.o: $(SRC_DIR)/simulation.c $(INC_DIR)/simulation.h $(INC_DIR)/workstation.h $(INC_DIR)/factory.h $(INC_DIR)/structures.h
+$(OBJ_DIR)/simulation.o: $(SRC_DIR)/simulation.c $(INC_DIR)/simulation.h $(INC_DIR)/workstation.h $(INC_DIR)/factory.h $(INC_DIR)/kanban.h $(INC_DIR)/structures.h
 	@echo "Compiling $< :"
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo
