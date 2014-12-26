@@ -4,51 +4,32 @@
 
 /***** Kanban ******/
 Kanban *create_kanban(Workstation *from, Ressource *fromContainerID[], Workstation *to, int nbRessources){
-	Kanban *kanban = calloc(1, sizeof(Kanban));
 
+	Kanban *kanban = calloc(1, sizeof(Kanban));
 	kanban->from = from;
-	kanban->fromContainerID = fromContainerID[0];
+	kanban->fromContainerID = fromContainerID;
 	kanban->to = to;
 	kanban->nbRessources = nbRessources;
-
-	/*#ifdef DEBUG
+	#ifdef DEBUG
 		printf("Kanban created.\n");
 		fflush(NULL);
-	#endif*/
+	#endif
 	
 	return kanban;
 }
 
 void send_kanban(Workstation *from, Ressource *fromContainerID[], Workstation *to, int nbRessources){
 
-	if( to == NULL ){
+	if( to != NULL ){
+		push(to->todo, create_kanban(from, fromContainerID, to, nbRessources));
+		return;
+	}else{
 		#ifdef DEBUG
 			printf("Warning: No \"to\" workstation to push a TODO kanban in LinkedList.\n");
 		#endif
-		return;
 	}
 
-	push(to->todo, create_kanban(from, fromContainerID, to, 20));
-}
-
-
-void move_kanban_todo_to_doing(Workstation *workstation){
 	
-	if( workstation->doing == NULL ){
-		workstation->doing = pop(workstation->todo); 
-			
-	}
-	#ifdef DEBUG
-	else {
-		printf("Warning: [%s] Can't move kanban from TODO to DOING because a kanban exists in DOING.\n", workstation->name);
-	}
-	#endif
-	
-}
-
-void move_kanban_doing_to_done(Workstation *workstation){
-	push(workstation->done, workstation->doing);	// Put the DOING kanban in the DONE list
-	workstation->doing = NULL;						// and reset the DOING kanban
 }
 
 
@@ -62,6 +43,7 @@ void print_kanban(Kanban *kanban){
 		} else {
 			printf("To:   -\n");
 		}
+		printf("debug containeradazd: %p\n", kanban->fromContainerID);
 		printf("Nb Ressources: %d\n", kanban->nbRessources);
 		printf("----------------------------\n");
 	} else {
@@ -83,7 +65,6 @@ LinkedList *create_linkedlist(){
 
 	return linkedlist;
 }
-
 
 void print_list(LinkedList *linkedlist) {
 

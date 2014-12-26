@@ -18,3 +18,11 @@ void join_threads_workstations(Workstation *factory[], int nb_workstations){
 	
 }
 
+void destroy_all_workstations(Workstation *factory[], int nb_workstations){
+	int i;
+	for(i=0 ; i<nb_workstations ; i++ ){
+		//printf("i=%d, addr: %d, addr: %d\n", i, (factory+i*sizeof(Workstation)), sizeof(Workstation) );
+		//destroy_workstation(*(factory+i));
+		destroy_workstation(factory[i]);
+	}
+}

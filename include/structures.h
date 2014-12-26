@@ -9,7 +9,12 @@ typedef struct Kanban Kanban;
 typedef struct LinkedList LinkedList;
 typedef struct LinkedListNodeKanban LinkedListNodeKanban;
 typedef struct Workstation Workstation;
+typedef enum Boll Bool;
 
+enum Boll {
+   FALSE = 0,
+   TRUE = 1
+};
 
 struct Ressource
 {
@@ -21,7 +26,7 @@ struct Ressource
 struct Kanban
 {
 	Workstation *from;
-	Ressource *fromContainerID;
+	Ressource **fromContainerID;
 	Workstation *to;
 	unsigned int nbRessources;
 };
@@ -53,8 +58,13 @@ struct Workstation
 
 	pthread_t thread;
 
-	pthread_mutex_t mutex;
-	pthread_cond_t cond;
+	pthread_mutex_t IDLE_mutex;
+	pthread_cond_t IDLE_cond;
+	pthread_mutex_t EmptyContainers_mutex;
+	pthread_cond_t EmptyContainers_cond;
+	pthread_mutex_t FullContainers_mutex;
+	pthread_cond_t FullContainers_cond;
+
 };
 
 
