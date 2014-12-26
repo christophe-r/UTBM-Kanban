@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <signal.h>
 
 #include "simulation.h"
 #include "structures.h"
@@ -10,11 +13,32 @@
 #define NB_WORKSTATIONS		7
 
 
+// Creates the factory (array of workstations)
+Workstation *factory[NB_WORKSTATIONS];
+pthread_t customer;
+
+
+void sigintHandler(int sig_num){
+
+	printf("Destroying workstations and exit...\n");
+
+	int i;
+	for( i=0; i<NB_WORKSTATIONS; i++ ){
+		pthread_cancel(factory[i]->thread);
+	}
+	
+	// Joins workstation's threads
+	join_threads_workstations(factory, NB_WORKSTATIONS);
+
+	// Destroys the workstations
+	destroy_all_workstations(factory, NB_WORKSTATIONS);
+
+	printf("Program exited.\n");
+
+    exit(0);
+}
 
 void runSimulation() {
-
-	// Creates the factory (array of workstations)
-	Workstation *factory[NB_WORKSTATIONS];
 
 	// Creates each workstation  
 	factory[0] = create_workstation("Workstation base   1.1", 8);
@@ -38,15 +62,33 @@ void runSimulation() {
 	// arrivalContainer[0] = arrivalContainer[1] = NULL
 	// send_kanban(NULL, factory[2]->containers0, factory[1],1);
 	
+
+	pthread_create(&customer, 0, &customer_thread, NULL);
+
+
 	// Joins workstation's threads
 	join_threads_workstations(factory, NB_WORKSTATIONS);
  	
-
 	// Destroys the workstations
-	destroy_all_workstations(factory, NB_WORKSTATIONS);
+	//destroy_all_workstations(factory, NB_WORKSTATIONS);
 
 
 	return;
 }
+
+
+void *customer_thread(void *p_data){
+
+	usleep(3000000); // 3 sec
+
+	printf("Customer test\n");
+
+	//printf("Sending 1 kanban to WS 0 (qty: 3)\n");
+	//void send_kanban(Workstation *from, Ressource *fromContainerID[], Workstation *to, int nbRessources);
+	//send_kanban(NULL, FINAL-CONTAINERS-HERE, factory[6], 3);
+
+	pthread_exit(NULL);
+}
+
 
  

@@ -14,9 +14,8 @@ void print_kanban(Kanban *kanban);
 
 
 void print_list(LinkedList *linkedlist);
-Kanban *pop(LinkedList *linkedlist); // Remove the first
-//int remove_last(LinkedListKanban * head);
-void push(LinkedList *linkedlist, Kanban *kanban); // Adding to the end of the list
+Kanban *pop(LinkedList *linkedlist); // Remove the first item and returns it
+void push(LinkedList *linkedlist, Kanban *kanban); // Adds to the end of the list
 void destroy_linkedlist(LinkedList *linkedlist);
 
 #endif

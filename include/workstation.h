@@ -11,7 +11,7 @@ void *workstation_thread(void *p_data);
 void link_workstations(Workstation *workstation, Workstation *parent);
 int count_full_container(Ressource *containers[]);
 Ressource *take_ressource(Ressource *containers[], Workstation *parent);
-int place_ressource(Ressource *containers[],Ressource *ressource);
+int put_ressource(Ressource *containers[], Ressource *ressource);
 
 void move_kanban_todo_to_doing(Workstation *workstation);
 void move_kanban_doing_to_done(Workstation *workstation);

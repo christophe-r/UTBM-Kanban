@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "structures.h"
+#include "workstation.h"
 #include "factory.h"
 
 
