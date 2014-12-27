@@ -22,7 +22,7 @@ $(EXEC_NAME): mkdirobj $(OBJS_DIR)
 	$(CC) $(CFLAGS) $(DEBUG) -o $@ $(OBJS_DIR) $(LIBS)
 	@echo
 
-release: mrproper unsetDebug $(EXEC_NAME)
+release: mkdirobj mrproper unsetDebug $(EXEC_NAME)
 
 unsetDebug:
 	$(eval CC=gcc)
