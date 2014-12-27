@@ -54,7 +54,7 @@ $(OBJ_DIR)/simulation.o: $(SRC_DIR)/simulation.c $(INC_DIR)/simulation.h $(INC_D
 	@echo
 	
 mkdirobj:
-	mkdir $(OBJ_DIR)
+	mkdir -p $(OBJ_DIR)
 
 check-leak:
 	valgrind --leak-check=full --show-reachable=yes ./$(EXEC_NAME)
