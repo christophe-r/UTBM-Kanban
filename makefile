@@ -33,7 +33,7 @@ $(OBJ_DIR)/main.o: $(SRC_DIR)/main.c $(INC_DIR)/simulation.h
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo 
 
-$(OBJ_DIR)/factory.o: $(SRC_DIR)/factory.c $(INC_DIR)/factory.h $(INC_DIR)/structures.h
+$(OBJ_DIR)/factory.o: $(SRC_DIR)/factory.c $(INC_DIR)/factory.h $(INC_DIR)/structures.h $(INC_DIR)/workstation.h
 	@echo "Compiling $< :"
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo 
@@ -43,7 +43,7 @@ $(OBJ_DIR)/kanban.o: $(SRC_DIR)/kanban.c $(INC_DIR)/kanban.h $(INC_DIR)/structur
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo 
 
-$(OBJ_DIR)/workstation.o: $(SRC_DIR)/workstation.c $(INC_DIR)/workstation.h $(INC_DIR)/structures.h
+$(OBJ_DIR)/workstation.o: $(SRC_DIR)/workstation.c $(INC_DIR)/workstation.h $(INC_DIR)/structures.h $(INC_DIR)/kanban.h
 	@echo "Compiling $< :"
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo 
