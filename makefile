@@ -17,7 +17,7 @@ OBJS=main.o \
 OBJS_DIR=$(addprefix $(OBJ_DIR)/,$(OBJS))
 
 
-$(EXEC_NAME): $(OBJS_DIR)
+$(EXEC_NAME): mkdirobj $(OBJS_DIR)
 	@echo "Compiling $(OBJS) :"
 	$(CC) $(CFLAGS) $(DEBUG) -o $@ $(OBJS_DIR) $(LIBS)
 	@echo
@@ -52,6 +52,9 @@ $(OBJ_DIR)/simulation.o: $(SRC_DIR)/simulation.c $(INC_DIR)/simulation.h $(INC_D
 	@echo "Compiling $< :"
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo
+	
+mkdirobj:
+	mkdir $(OBJ_DIR)
 
 check-leak:
 	valgrind --leak-check=full --show-reachable=yes ./$(EXEC_NAME)
