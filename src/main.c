@@ -8,6 +8,7 @@ int main(void) {
 
 	signal(SIGINT, sigintHandler);
 
+	buildTimeline();
 	runSimulation();
 
 	return EXIT_SUCCESS;

@@ -4,91 +4,162 @@
 #include <pthread.h>
 #include <signal.h>
 
-#include "simulation.h"
 #include "structures.h"
 #include "workstation.h"
 #include "factory.h"
 #include "kanban.h"
+#include "simulation.h"
 
 #define NB_WORKSTATIONS		7
 
 
 // Creates the factory (array of workstations)
 Workstation *factory[NB_WORKSTATIONS];
-pthread_t customer;
+TimeLineNode *userTimeLine[50];
+
+pthread_t timeLine;
+bool simulationStart = false;
 
 
 void sigintHandler(int sig_num){
+	int i=0;
+
+	if (simulationStart == false){
+		exit(0);
+	}
+	printf("\n\nSig Int :\n");
+	printf("\nDisplay final ressources :\n");
+	displayFinalRessources();
+
+	printf("\nDestroying time line ...\n");
+	while(userTimeLine[i] != NULL){
+		free(userTimeLine[i]);
+		i++;
+	}
 
 	printf("Destroying workstations and exit...\n");
-
-	int i;
 	for( i=0; i<NB_WORKSTATIONS; i++ ){
 		pthread_cancel(factory[i]->thread);
 	}
 	
 	// Joins workstation's threads
 	join_threads_workstations(factory, NB_WORKSTATIONS);
+	pthread_join(timeLine, NULL);
 
 	// Destroys the workstations
 	destroy_all_workstations(factory, NB_WORKSTATIONS);
 
 	printf("Program exited.\n");
-
     exit(0);
 }
 
 void runSimulation() {
 
+	printf("Launching Factory\n");
+	simulationStart = true;
+
 	// Creates each workstation  
-	factory[0] = create_workstation("Workstation base   1.1", 8);
-	factory[1] = create_workstation("Workstation base   1.2", 8);
-	factory[2] = create_workstation("Workstation middle 1", 8);
-	factory[3] = create_workstation("Workstation base   2.1", 8);
-	factory[4] = create_workstation("Workstation base   2.2", 8);
-	factory[5] = create_workstation("Workstation middle 2", 8);
-	factory[6] = create_workstation("Workstation up     0", 8);
+	factory[0] = create_workstation("Workstation base   1.1", 5,false);
+	factory[1] = create_workstation("Workstation base   1.2", 5,false);
+	factory[2] = create_workstation("Workstation middle 1",   5,false);
+	// factory[7] = create_workstation("Workstation base   2.1", 5,false);
+	factory[3] = create_workstation("Workstation base   2.2", 5,false);
+	factory[4] = create_workstation("Workstation middle 2",   5,false);
+	factory[5] = create_workstation("Workstation up     0",   5,false);
+	factory[6] = create_workstation("Customer", 5,true);
 
 	// Linking the workstations each others
-	link_workstations(factory[2], factory[0]); // The parent of Workstation 2 is now Workstation 0
-	link_workstations(factory[2], factory[1]); // The parent of Workstation 2 is now Workstation 0 & 1
-	link_workstations(factory[5], factory[3]); // The parent of Workstation 5 is now Workstation 3
-	link_workstations(factory[5], factory[4]); // The parent of Workstation 5 is now Workstation 3 & 4
-	link_workstations(factory[6], factory[5]); // The parent of Workstation 6 is now Workstation 2
-	link_workstations(factory[6], factory[2]); // The parent of Workstation 6 is now Workstation 2 & 5
+	link_workstations(factory[2], factory[0]); // Workstation middle 1 -> Workstation base   1.1
+	link_workstations(factory[2], factory[1]); // Workstation middle 1 -> Workstation base   1.1
+	// link_workstations(factory[4], factory[7]); // Workstation middle 2 -> Workstation base   2.1
+	link_workstations(factory[4], factory[3]); // Workstation middle 2 -> Workstation base   2.2
+	link_workstations(factory[5], factory[2]); // Workstation up     0 -> Workstation middle 1
+	link_workstations(factory[5], factory[4]); // Workstation up     0 -> Workstation middle 2
 
+	link_workstations(factory[6], factory[5]); // customer -> Workstation up     0 
 
-	// Ressource *arrivalContainer[2];
-	// arrivalContainer[0] = arrivalContainer[1] = NULL
-	// send_kanban(NULL, factory[2]->containers0, factory[1],1);
-	
-
-	pthread_create(&customer, 0, &customer_thread, NULL);
-
+	pthread_create(&timeLine, 0, &timeLine_thread, (void *) factory[6]);
 
 	// Joins workstation's threads
 	join_threads_workstations(factory, NB_WORKSTATIONS);
+	pthread_join(timeLine, NULL);
  	
 	// Destroys the workstations
 	//destroy_all_workstations(factory, NB_WORKSTATIONS);
 
-
 	return;
 }
 
+void buildTimeline(){
+	int nborders= 0;
+	int i = 0;
 
-void *customer_thread(void *p_data){
+	userTimeLine[0] = NULL;
 
-	usleep(3000000); // 3 sec
+	printf("Initialisation of the time line \n");
+	getUserEntry("Numbers of orders to send to the production line (0 for default time line) :", &nborders);
+	if (nborders == 0 )
+	{
+		printf("Launching default time line\n");
+		userTimeLine[0] = addNodeToTimeline(10, 2);
+		userTimeLine[1] = addNodeToTimeline(3, 3);
+		userTimeLine[2] = addNodeToTimeline(4, 1);
+		userTimeLine[3] = addNodeToTimeline(6, 2);
+		userTimeLine[4] = NULL;
 
-	printf("Customer test\n");
+		while(userTimeLine[i] != NULL){
+			printf("%d sec pause --> ",userTimeLine[i]->WaitingTime);
+			printf("send a order for %d items --> ",userTimeLine[i]->KanbanQuantities);
+			i++;
+		}
+		printf("Finish \n");
+		return;
+	}	
 
-	//printf("Sending 1 kanban to WS 0 (qty: 3)\n");
-	//void send_kanban(Workstation *from, Ressource *fromContainerID[], Workstation *to, int nbRessources);
-	//send_kanban(NULL, FINAL-CONTAINERS-HERE, factory[6], 3);
+	for (i = 0; i < nborders; ++i)
+	{
+		int waitingTime = 0;
+		int kanbanQuantities = 0;
+		printf("Waiting period before the order to order %d (sec): ",i+1);
+		getUserEntry("", &waitingTime);
+		printf("Quantity of product for the order %d : ",i+1);
+		getUserEntry("", &kanbanQuantities);
+		userTimeLine[i] = addNodeToTimeline(waitingTime, kanbanQuantities);
+	}
+	i++;
+	userTimeLine[i] = NULL;
+	i=0;
+	while(userTimeLine[i] != NULL){//display timeline
+		printf("%d sec pause --> ",userTimeLine[i]->WaitingTime);
+		printf("send a order for %d items --> ",userTimeLine[i]->KanbanQuantities);
+		i++;
+	}
+	printf("Finish \n");
+}
 
+void *timeLine_thread(void *p_data){
+	int i = 0;
+	Workstation *customer = (Workstation *) p_data;
+	printf("Launching time line\n");
+	while(userTimeLine[i] != NULL){
+		usleep(userTimeLine[i]->WaitingTime * 1000000);
+		send_kanban(customer, customer->containers0, customer, userTimeLine[i]->KanbanQuantities); //tramsmit kanban to customer thread
+		pthread_cond_signal(&(customer->cond_EmptyContainers));// wake up customer thread
+		i++;
+	}
+	printf("Time line finish\n");
 	pthread_exit(NULL);
 }
 
-
  
+void getUserEntry(char *txt, int *value){ // get user keyboard input
+	printf("%s", txt);
+	scanf("%d", value);
+}
+
+TimeLineNode *addNodeToTimeline(int waitingTime, int kanbanQuantities){ // create node in time line
+	TimeLineNode *node = calloc(1, sizeof(TimeLineNode));
+	node->WaitingTime = waitingTime;
+	node->KanbanQuantities = kanbanQuantities;
+	return node;
+}

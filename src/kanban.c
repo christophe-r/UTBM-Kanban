@@ -11,7 +11,7 @@ Kanban *create_kanban(Workstation *from, Ressource *fromContainerID[], Workstati
 	kanban->to = to;
 	kanban->nbRessources = nbRessources;
 	#ifdef DEBUG
-		printf("Kanban created (qty: %d) from \"%s\" to \"%s\".\n", nbRessources, from->name, to->name);
+		// printf("Kanban created (qty: %d) from \"%s\" to \"%s\".\n", nbRessources, from->name, to->name);
 		fflush(NULL);
 	#endif
 	

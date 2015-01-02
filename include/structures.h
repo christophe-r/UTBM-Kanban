@@ -9,12 +9,13 @@ typedef struct Kanban Kanban;
 typedef struct LinkedList LinkedList;
 typedef struct LinkedListNodeKanban LinkedListNodeKanban;
 typedef struct Workstation Workstation;
-/*typedef enum Bool Bool;
+typedef struct TimeLineNode TimeLineNode;
 
-enum Bool {
-   FALSE = 0,
-   TRUE = 1
-};*/
+struct TimeLineNode
+{
+	int WaitingTime;
+	int KanbanQuantities;
+};
 
 struct Ressource
 {
