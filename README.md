@@ -2,6 +2,7 @@ UTBM-Kanban
 ===========
 
 Kanban method factory simulation.
+
 1. Check that the "obj" directory exists at the project root. If not, create it.
 
 2. Compile the debug version of the project with the command: *make*
