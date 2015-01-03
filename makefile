@@ -17,12 +17,12 @@ OBJS=main.o \
 OBJS_DIR=$(addprefix $(OBJ_DIR)/,$(OBJS))
 
 
-$(EXEC_NAME): mkdirobj $(OBJS_DIR)
+$(EXEC_NAME): $(OBJS_DIR)
 	@echo "Compiling $(OBJS) :"
 	$(CC) $(CFLAGS) $(DEBUG) -o $@ $(OBJS_DIR) $(LIBS)
 	@echo
 
-release: mkdirobj mrproper unsetDebug $(EXEC_NAME)
+release: mrproper unsetDebug $(EXEC_NAME)
 
 unsetDebug:
 	$(eval CC=gcc)
@@ -43,18 +43,15 @@ $(OBJ_DIR)/kanban.o: $(SRC_DIR)/kanban.c $(INC_DIR)/kanban.h $(INC_DIR)/structur
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo 
 
-$(OBJ_DIR)/workstation.o: $(SRC_DIR)/workstation.c $(INC_DIR)/workstation.h $(INC_DIR)/structures.h $(INC_DIR)/kanban.h
+$(OBJ_DIR)/workstation.o: $(SRC_DIR)/workstation.c $(INC_DIR)/workstation.h $(INC_DIR)/structures.h $(INC_DIR)/kanban.h $(INC_DIR)/config.h
 	@echo "Compiling $< :"
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo 
 
-$(OBJ_DIR)/simulation.o: $(SRC_DIR)/simulation.c $(INC_DIR)/simulation.h $(INC_DIR)/workstation.h $(INC_DIR)/factory.h $(INC_DIR)/kanban.h $(INC_DIR)/structures.h
+$(OBJ_DIR)/simulation.o: $(SRC_DIR)/simulation.c $(INC_DIR)/simulation.h $(INC_DIR)/workstation.h $(INC_DIR)/factory.h $(INC_DIR)/kanban.h $(INC_DIR)/structures.h $(INC_DIR)/config.h
 	@echo "Compiling $< :"
 	$(CC) $(CFLAGS) $(DEBUG) -c $< $(LIBS) -o $@
 	@echo
-	
-mkdirobj:
-	mkdir -p $(OBJ_DIR)
 
 check-leak:
 	valgrind --leak-check=full --show-reachable=yes ./$(EXEC_NAME)

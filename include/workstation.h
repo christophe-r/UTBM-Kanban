@@ -20,11 +20,13 @@ void move_kanban_doing_to_done(Workstation *workstation);
 void display_workstation(Workstation *workstation);
 void consoleLog(Workstation *workstation, char *txt);
 void consoleLogRoot(Workstation *workstation, char *txt);
-void displayFinalRessources();
+void displayFinalItems();
 
 void destroy_workstation(Workstation *workstation);
 
+
 void usleep(int time);
+
 
 #endif
 

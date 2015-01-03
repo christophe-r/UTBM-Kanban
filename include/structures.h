@@ -9,12 +9,12 @@ typedef struct Kanban Kanban;
 typedef struct LinkedList LinkedList;
 typedef struct LinkedListNodeKanban LinkedListNodeKanban;
 typedef struct Workstation Workstation;
-typedef struct TimeLineNode TimeLineNode;
+typedef struct TimeLineEvent TimeLineEvent;
 
-struct TimeLineNode
+struct TimeLineEvent
 {
 	int WaitingTime;
-	int KanbanQuantities;
+	int KanbanQuantity;
 };
 
 struct Ressource
