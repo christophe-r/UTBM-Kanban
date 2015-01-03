@@ -4,7 +4,7 @@
 #define __MYSTRUCTURES__
 
 
-typedef struct Ressource Ressource;
+typedef struct Resource Resource;
 typedef struct Kanban Kanban;
 typedef struct LinkedList LinkedList;
 typedef struct LinkedListNodeKanban LinkedListNodeKanban;
@@ -17,7 +17,7 @@ struct TimeLineEvent
 	int KanbanQuantity;
 };
 
-struct Ressource
+struct Resource
 {
 	int elapsedTime;
 	char *name;
@@ -27,9 +27,9 @@ struct Ressource
 struct Kanban
 {
 	Workstation *from;
-	Ressource **fromContainerID;
+	Resource **fromContainerID;
 	Workstation *to;
-	unsigned int nbRessources;
+	unsigned int nbResources;
 };
 
 
@@ -50,8 +50,8 @@ struct Workstation
 {
 	Workstation *parents[2];
 	char *name;
-	Ressource *containers0[2];
-	Ressource *containers1[2];
+	Resource *containers0[2];
+	Resource *containers1[2];
 	unsigned short int processDelay;	// Workstation working time (seconds)
 	LinkedList *todo;     				// Linked List for to-do kanbans
 	Kanban *doing;

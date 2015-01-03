@@ -21,7 +21,7 @@ TimeLineEvent *userTimeline[TIMELINE_EVENTS_CAPACITY]; // Timeline
 pthread_t timeline;
 bool simulationStarted = false;
 
-extern Ressource *FinalContainers[]; // From workstation.c
+extern Resource *FinalContainers[]; // From workstation.c
 
 void sigintHandler(int sig_num){
 	int i = 0;
@@ -34,7 +34,7 @@ void sigintHandler(int sig_num){
 	printf("Final items:\n");
 	displayFinalItems();
 
-	printf("Destroying final ressources...");
+	printf("Destroying final resources...");
 	for( i=0; i<FINAL_CONTAINERS_CAPACITY; i++ ){
 		free(FinalContainers[i]);
 	}
@@ -209,6 +209,8 @@ void *timeline_thread(void *p_data){
 	int i = 0;
 	Workstation *customer = (Workstation *) p_data;
 	printf("\e[7mLaunching timeline...\e[27m\n");
+
+	usleep(1000000);
 
 	while( userTimeline[i] != NULL ){
 		usleep(userTimeline[i]->WaitingTime * 1000000);

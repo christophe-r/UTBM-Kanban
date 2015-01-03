@@ -10,9 +10,9 @@ void *workstation_thread(void *p_data);
 void *customer_thread(void *p_data);
 
 void link_workstations(Workstation *workstation, Workstation *parent);
-int count_full_container(Ressource *containers[]);
-Ressource *take_ressource(Ressource *containers[], Workstation *attachedParent);
-int put_ressource(Ressource *containers[], Ressource *ressource);
+int count_full_container(Resource *containers[]);
+Resource *take_resource(Resource *containers[], Workstation *attachedParent);
+int put_resource(Resource *containers[], Resource *resource);
 
 void move_kanban_todo_to_doing(Workstation *workstation);
 void move_kanban_doing_to_done(Workstation *workstation);

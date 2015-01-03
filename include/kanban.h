@@ -6,9 +6,9 @@
 
 
 LinkedList *create_linkedlist();
-Kanban *create_kanban(Workstation *from, Ressource *fromContainerID[], Workstation *to, int nbRessources);
+Kanban *create_kanban(Workstation *from, Resource *fromContainerID[], Workstation *to, int nbResources);
 
-void send_kanban(Workstation *from, Ressource *fromContainerID[], Workstation *to, int nbRessources);
+void send_kanban(Workstation *from, Resource *fromContainerID[], Workstation *to, int nbResources);
 
 void print_kanban(Kanban *kanban);
 

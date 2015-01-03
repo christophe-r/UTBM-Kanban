@@ -3,25 +3,25 @@
 #include <kanban.h>
 
 /***** Kanban ******/
-Kanban *create_kanban(Workstation *from, Ressource *fromContainerID[], Workstation *to, int nbRessources){
+Kanban *create_kanban(Workstation *from, Resource *fromContainerID[], Workstation *to, int nbResources){
 
 	Kanban *kanban = calloc(1, sizeof(Kanban));
 	kanban->from = from;
 	kanban->fromContainerID = fromContainerID;
 	kanban->to = to;
-	kanban->nbRessources = nbRessources;
+	kanban->nbResources = nbResources;
 	#ifdef DEBUG
-		// printf("Kanban created (qty: %d) from \"%s\" to \"%s\".\n", nbRessources, from->name, to->name);
+		// printf("Kanban created (qty: %d) from \"%s\" to \"%s\".\n", nbResources, from->name, to->name);
 		fflush(NULL);
 	#endif
 	
 	return kanban;
 }
 
-void send_kanban(Workstation *from, Ressource *fromContainerID[], Workstation *to, int nbRessources){
+void send_kanban(Workstation *from, Resource *fromContainerID[], Workstation *to, int nbResources){
 
 	if( to != NULL ){
-		push(to->todo, create_kanban(from, fromContainerID, to, nbRessources));
+		push(to->todo, create_kanban(from, fromContainerID, to, nbResources));
 		return;
 	}else{
 		#ifdef DEBUG
@@ -43,8 +43,7 @@ void print_kanban(Kanban *kanban){
 		} else {
 			printf("To:   -\n");
 		}
-		printf("debug containeradazd: %p\n", kanban->fromContainerID);
-		printf("Nb Ressources: %d\n", kanban->nbRessources);
+		printf("Nb Resources: %d\n", kanban->nbResources);
 		printf("----------------------------\n");
 	} else {
 		printf("No Kanban to print.\n");

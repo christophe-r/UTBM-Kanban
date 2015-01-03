@@ -11,7 +11,7 @@
 #include "config.h"
 
 
-Ressource *FinalContainers[FINAL_CONTAINERS_CAPACITY]; // save finished items
+Resource *FinalContainers[FINAL_CONTAINERS_CAPACITY]; // save finished items
 
 Workstation *create_workstation(char *name, unsigned short int processDelay, bool launcher){
 	Workstation *workstation = calloc(1, sizeof(Workstation));
@@ -66,6 +66,8 @@ void *customer_thread(void *p_data){
 
 	FinalContainers[0] = NULL;
 
+	usleep(1000000);
+
 	while(1){
 		pthread_mutex_lock(&(thisWS->mutex_EmptyContainers)); // entering in a critical part
 		pthread_cond_wait(&(thisWS->cond_EmptyContainers), &(thisWS->mutex_EmptyContainers));
@@ -75,29 +77,29 @@ void *customer_thread(void *p_data){
 
 			if( thisWS->parents[0] != NULL ){
 				consoleLogRoot(thisWS, "Order transmited to the final workstation");
-				send_kanban(thisWS, thisWS->containers0, thisWS->parents[0], thisWS->doing->nbRessources); // transmits kanban to parent
+				send_kanban(thisWS, thisWS->containers0, thisWS->parents[0], thisWS->doing->nbResources); // transmits kanban to parent
 				pthread_cond_signal(&(thisWS->parents[0]->cond_IDLE)); // wakes up parent
 			}
 
 			/*if( thisWS->parents[1] != NULL ){
 				consoleLogRoot(thisWS, "Kanban transmited (1)");
-				send_kanban(thisWS, thisWS->containers1, thisWS->parents[1], thisWS->doing->nbRessources); // transmits kanban to parent
+				send_kanban(thisWS, thisWS->containers1, thisWS->parents[1], thisWS->doing->nbResources); // transmits kanban to parent
 				pthread_cond_signal(&(thisWS->parents[1]->cond_IDLE)); // wakes up parent
 			}*/
 
 			move_kanban_doing_to_done(thisWS);
 		}
 
-		while( count_full_container(thisWS->containers0) != 0 ){ // save ressource
-			consoleLogRoot(thisWS, "Ressources stored to the final containers.");
-			FinalContainers[index] = take_ressource(thisWS->containers0, thisWS);
+		while( count_full_container(thisWS->containers0) != 0 ){ // save resource
+			consoleLogRoot(thisWS, "Resource stored to the final containers.");
+			FinalContainers[index] = take_resource(thisWS->containers0, thisWS);
 			index++;
 			FinalContainers[index] = NULL;
 		}
 
-		/*while( count_full_container(thisWS->containers1) != 0 ){ // save ressource
-			consoleLogRoot(thisWS, "Ressources archived (1)");
-			FinalContainers[index] = take_ressource(thisWS->containers1, thisWS);
+		/*while( count_full_container(thisWS->containers1) != 0 ){ // save resource
+			consoleLogRoot(thisWS, "Resource stored to the final containers.");
+			FinalContainers[index] = take_resource(thisWS->containers1, thisWS);
 			index++;
 			FinalContainers[index] = NULL;
 		}*/
@@ -110,6 +112,9 @@ void *customer_thread(void *p_data){
 
 
 void *workstation_thread(void *p_data){
+
+	usleep(10000);
+
 	Workstation *thisWS = (Workstation *) p_data;
 	consoleLog(thisWS, "Creating workstation...");
 
@@ -117,13 +122,15 @@ void *workstation_thread(void *p_data){
 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 	
 
-	int RemainingRessourcesInKanban = 0;
+	int RemainingResourcesInKanban = 0;
+
+	usleep(1000000);
 
 	while(1){ // Main loop 
 
 		// consoleLog(thisWS, "lock mutex_IDLE");
 		pthread_mutex_lock(&(thisWS->mutex_IDLE)); // entering in a critical part
-		if (RemainingRessourcesInKanban == 0 ){ // if it's a new kanban or initialization
+		if (RemainingResourcesInKanban == 0 ){ // if it's a new kanban or initialization
 
 			if( thisWS->doing != NULL ){
 				move_kanban_doing_to_done(thisWS); // moves current kanban to done
@@ -135,13 +142,13 @@ void *workstation_thread(void *p_data){
 				int nbEmptyContainers1 = 2 - count_full_container(thisWS->containers1);
 
 				if( nbEmptyContainers0 != 0 && thisWS->parents[0] != NULL){
-					send_kanban(thisWS, thisWS->containers0, thisWS->parents[0], nbEmptyContainers0); // asks ressources to fill in his containers0
+					send_kanban(thisWS, thisWS->containers0, thisWS->parents[0], nbEmptyContainers0); // asks resources to fill in his containers0
 					pthread_cond_signal(&(thisWS->parents[0]->cond_IDLE));
 					consoleLog(thisWS, "Send kanban to parent0 to fill in containers0");
 				}
 
 				if( nbEmptyContainers1 != 0 && thisWS->parents[1] != NULL ){
-					send_kanban(thisWS, thisWS->containers1, thisWS->parents[1], nbEmptyContainers0); // asks ressources to fill in his containers1
+					send_kanban(thisWS, thisWS->containers1, thisWS->parents[1], nbEmptyContainers0); // asks resources to fill in his containers1
 					pthread_cond_signal(&(thisWS->parents[1]->cond_IDLE));
 					consoleLog(thisWS, "Send kanban to parent1 to fill in containers1");
 				}
@@ -156,15 +163,15 @@ void *workstation_thread(void *p_data){
 			consoleLog(thisWS, "Starting a new kanban");
 
 			if( thisWS->parents[0] != NULL ){
-				send_kanban(thisWS, thisWS->containers0, thisWS->parents[0], thisWS->doing->nbRessources); // transmits kanban to parents
+				send_kanban(thisWS, thisWS->containers0, thisWS->parents[0], thisWS->doing->nbResources); // transmits kanban to parents
 				pthread_cond_signal(&(thisWS->parents[0]->cond_IDLE)); // wakes up parents
 			}
 			if( thisWS->parents[1] != NULL ){
-				send_kanban(thisWS, thisWS->containers1, thisWS->parents[1], thisWS->doing->nbRessources); // transmits kanban to parent
+				send_kanban(thisWS, thisWS->containers1, thisWS->parents[1], thisWS->doing->nbResources); // transmits kanban to parent
 				pthread_cond_signal(&(thisWS->parents[1]->cond_IDLE));// wake up parent
 			}
 
-			RemainingRessourcesInKanban = thisWS->doing->nbRessources;	
+			RemainingResourcesInKanban = thisWS->doing->nbResources;	
 		}
 
 		pthread_mutex_unlock(&(thisWS->mutex_IDLE)); // end of the critical part
@@ -185,8 +192,8 @@ void *workstation_thread(void *p_data){
 			}
 		}
 
-		Ressource *ressource0 = take_ressource(thisWS->containers0, thisWS->parents[0]); // gets current ressources
-		Ressource *ressource1 = take_ressource(thisWS->containers1, thisWS->parents[1]);
+		Resource *resource0 = take_resource(thisWS->containers0, thisWS->parents[0]); // gets current resources
+		Resource *resource1 = take_resource(thisWS->containers1, thisWS->parents[1]);
 
 		if( thisWS->parents[0] != NULL ){
 			consoleLog(thisWS, "Send signal to wake up parent 0 (cond_FullContainers)");
@@ -198,26 +205,26 @@ void *workstation_thread(void *p_data){
 			pthread_cond_signal(&(thisWS->parents[1]->cond_FullContainers)); // wakes up parents
 		}
 
-		Ressource *ressource = calloc(1, sizeof(Ressource));
-		if (ressource == NULL || ressource0 == NULL || ressource1 == NULL ){
-			consoleLog(thisWS, "Error: Ressource not initialized\n");
-			printf("ressource : %p\n", ressource);
-			printf("ressource0 : %p\n", ressource0);
-			printf("ressource1 : %p\n", ressource1);
+		Resource *resource = calloc(1, sizeof(Resource));
+		if (resource == NULL || resource0 == NULL || resource1 == NULL ){
+			consoleLog(thisWS, "Error: Resource not initialized\n");
+			printf("resource : %p\n", resource);
+			printf("resource0 : %p\n", resource0);
+			printf("resource1 : %p\n", resource1);
 		}
 
-		ressource->elapsedTime = ressource0->elapsedTime + ressource1->elapsedTime + thisWS->processDelay;
-		ressource->name = ""; // TODO
-		consoleLog(thisWS, "Create new ressource");
+		resource->elapsedTime = resource0->elapsedTime + resource1->elapsedTime + thisWS->processDelay;
+		resource->name = ""; // TODO
+		consoleLog(thisWS, "Creating new resource");
 
-		free(ressource0); //destroys old ressources
-		free(ressource1);
+		free(resource0); //destroys old resources
+		free(resource1);
 
 		pthread_mutex_unlock(&(thisWS->mutex_EmptyContainers)); // end of the critical part
 
 		consoleLog(thisWS, "\e[91mWorking...\e[39m");
 		usleep(thisWS->processDelay * 1000000); // simulates the time of the production in (ms)
-		RemainingRessourcesInKanban--;
+		RemainingResourcesInKanban--;
 
 		// consoleLog(thisWS, "lock mutex_FullContainers");
 		pthread_mutex_lock(&(thisWS->mutex_FullContainers)); // entering in a critical part
@@ -227,8 +234,8 @@ void *workstation_thread(void *p_data){
 			pthread_cond_wait(&(thisWS->cond_FullContainers), &(thisWS->mutex_FullContainers));
 		}
 
-		put_ressource(thisWS->doing->fromContainerID, ressource); // puts the ressource in the next container
-		consoleLog(thisWS, "Ressource added to the kanban sender");
+		put_resource(thisWS->doing->fromContainerID, resource); // puts the resource in the next container
+		consoleLog(thisWS, "Resource added to the kanban sender");
 		pthread_mutex_unlock(&(thisWS->mutex_FullContainers)); // end of the critical part
 		
 		consoleLog(thisWS, "Send signal to wake up the kanban sender (cond_FullContainers)");
@@ -257,47 +264,47 @@ void link_workstations(Workstation *workstation, Workstation *parent){
 }
 
 
-Ressource *take_ressource(Ressource *containers[], Workstation *attachedParent){
-	Ressource *ressource = NULL;
+Resource *take_resource(Resource *containers[], Workstation *attachedParent){
+	Resource *resource = NULL;
 
 	if( attachedParent == NULL ){ // if parent doesn't exist, create a kanban (low level Workstation)
-		ressource = calloc(1, sizeof(Ressource));
-		ressource->elapsedTime = 0;
-		ressource->name = ""; // TODO
-		// printf("Warning: Creating  new ressource\n");
-		return ressource;
+		resource = calloc(1, sizeof(Resource));
+		resource->elapsedTime = 0;
+		resource->name = ""; // TODO
+		// printf("Warning: Creating new resource\n");
+		return resource;
 	}
 
 	if( containers[0] != NULL ){
-		ressource = containers[0];
+		resource = containers[0];
 		containers[0] = NULL;
-		// printf("returning container 0 : %p\n", ressource);
-		return ressource;
+		// printf("returning container 0 : %p\n", resource);
+		return resource;
 	} else if( containers[1] != NULL ){
-		ressource = containers[1];
+		resource = containers[1];
 		containers[1] = NULL;
-		// printf("returning container 1 : %p\n", ressource);
-		return ressource;
+		// printf("returning container 1 : %p\n", resource);
+		return resource;
 	} else {
 		printf("Warning: The container is empty\n");
-		return ressource;
+		return resource;
 	}
 }
 
 
-int put_ressource(Ressource *containers[], Ressource *ressource){
+int put_resource(Resource *containers[], Resource *resource){
 	if( containers[0] == NULL ){
-		containers[0] = ressource;
+		containers[0] = resource;
 		return 0;
 	} else if( containers[1] == NULL ){
-		containers[1] = ressource;
+		containers[1] = resource;
 		return 1;
 	} else {
 		return -1;
 	}
 }
 
-int count_full_container(Ressource *containers[]){ // Returns the amount of full containers
+int count_full_container(Resource *containers[]){ // Returns the amount of full containers
 	int nbFullContainer = 0;
 	if (containers[0] != NULL) nbFullContainer++;
 	if (containers[1] != NULL) nbFullContainer++;
@@ -339,13 +346,13 @@ void display_workstation(Workstation *workstation){
 		printf("Parent 2  : %s\n", workstation->parents[1]->name);
 	}
 
-	printf("Ressources: TODO\n");
+	printf("Resources: TODO\n");
 	printf("-------------------------------------------\n");
 
 }
 
 void consoleLog(Workstation *workstation, char *txt){
-	usleep(10000); // 10 ms
+	//usleep(10000); // 10 ms
 	if( strcmp(workstation->name, OBSERVE_WORKSTATION) == 0 || OBSERVE_ALL_WORKSTATIONS ){
 		printf("\e[1m[%s]\e[21m %s\n", workstation->name, txt);
 		fflush(NULL);
@@ -387,7 +394,7 @@ void destroy_workstation(Workstation *workstation){
 	pthread_mutex_destroy(&workstation->mutex_FullContainers);
 	pthread_cond_destroy(&workstation->cond_FullContainers);
 
-	// Destroys ressources
+	// Destroys resources
 	free(workstation->containers0[0]);
 	free(workstation->containers0[1]);
 	free(workstation->containers1[0]);
