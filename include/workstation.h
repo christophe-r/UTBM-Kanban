@@ -19,7 +19,7 @@ void move_kanban_todo_to_doing(Workstation *workstation);
 void move_kanban_doing_to_done(Workstation *workstation);
 
 void display_workstation(Workstation *workstation);
-void consoleLog(Workstation *workstation, char *txt);
+void consoleLog(Workstation *workstation, char *txt, int logLevel);
 void consoleLogRoot(Workstation *workstation, char *txt);
 void displayFinalItems();
 

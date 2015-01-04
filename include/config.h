@@ -7,8 +7,15 @@
 // View mode (true: all workstations / false: one workstation)
 #define OBSERVE_ALL_WORKSTATIONS	true
 
+
+//define what messages you want to log : 
+// 1 : log only very basic stuff
+// 2 : log basic stuff + monitor
+// 3 : log everthing
+#define LOGLEVEL	3
+
 // Used if OBSERVE_ALL_WORKSTATIONS is set to false
-#define OBSERVE_WORKSTATION			"Aircraft testing"	// Workstation name : COPY & PASTE FROM simulation.c
+#define OBSERVE_WORKSTATION			"Cabin assembly"	// Workstation name : COPY & PASTE FROM simulation.c
 
 
 

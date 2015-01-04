@@ -83,7 +83,7 @@ void runSimulation() {
 	 * Do not uncomment several factories at the same time.
 	 * Do not forget to change the define NB_WORKSTATIONS in config.h. Put the corresponding number of workstations.
 	*/
-	//build_debug_factory(); // 7 worksations
+	// build_debug_factory(); // 7 worksations
 	//build_sample_factory(); // 3 worksations
 	build_aircraft_factory(); // 13 worksations
 
@@ -122,8 +122,8 @@ void buildTimeline(){
 		printf("Launching the default timeline\n");
 		userTimeline[0] = addEventToTimeline(10, 2);
 		userTimeline[1] = addEventToTimeline(3, 3);
-		userTimeline[2] = addEventToTimeline(4, 1);
-		userTimeline[3] = addEventToTimeline(6, 2);
+		// userTimeline[2] = addEventToTimeline(4, 1);
+		// userTimeline[3] = addEventToTimeline(6, 2);
 		userTimeline[4] = NULL;
 
 	} else {
@@ -163,13 +163,13 @@ void build_debug_factory(){
 	}
 
 	// Creates each workstation  
-	factory[0] = create_workstation("Workstation up     1.1", 2, false);
-	factory[1] = create_workstation("Workstation up     1.2", 3, false);
-	factory[2] = create_workstation("Workstation middle 1",   4, false);
-	factory[3] = create_workstation("Workstation up     2.1", 2, false);
-	factory[4] = create_workstation("Workstation up     2.2", 3, false);
-	factory[5] = create_workstation("Workstation middle 2",   4, false);
-	factory[6] = create_workstation("Workstation down   0",   5, false);
+	factory[0] = create_workstation("Workstation up     1.1", 1, false);
+	factory[1] = create_workstation("Workstation up     1.2", 1, false);
+	factory[2] = create_workstation("Workstation middle 1",   3, false);
+	factory[3] = create_workstation("Workstation up     2.1", 1, false);
+	factory[4] = create_workstation("Workstation up     2.2", 1, false);
+	factory[5] = create_workstation("Workstation middle 2",   3, false);
+	factory[6] = create_workstation("Workstation down   0",   6, false);
 
 	// Creates customer (special workstation)
 	customer = create_workstation("Customer", 0, true);
@@ -218,22 +218,22 @@ void build_aircraft_factory(){
 	}
 
 	// Creates each workstation  
-	factory[0] = create_workstation("Cabin parts", 5, false);
-	factory[1] = create_workstation("Wings parts", 8, false);
-	factory[2] = create_workstation("Gears parts", 6, false);
-	factory[3] = create_workstation("Engines parts", 10, false);
+	factory[0] = create_workstation("Cabin parts", 1, false);
+	factory[1] = create_workstation("Wings parts", 1, false);
+	factory[2] = create_workstation("Gears parts", 1, false);
+	factory[3] = create_workstation("Engines parts", 1, false);
 
-	factory[4] = create_workstation("Cabin assembly", 4, false);
-	factory[5] = create_workstation("Wings assembly", 6, false);
-	factory[6] = create_workstation("Gears assembly", 4, false);
-	factory[7] = create_workstation("Engines assembly", 9, false);
+	factory[4] = create_workstation("Cabin assembly", 2, false);
+	factory[5] = create_workstation("Wings assembly", 2, false);
+	factory[6] = create_workstation("Gears assembly", 2, false);
+	factory[7] = create_workstation("Engines assembly", 2, false);
 
 	factory[8] = create_workstation("C+W assembly", 4, false);
-	factory[9] = create_workstation("(C+W)+G assembly", 3, false);
-	factory[10] = create_workstation("(C+W+G)+E assembly", 4, false);
+	factory[9] = create_workstation("(C+W)+G assembly", 6, false);
+	factory[10] = create_workstation("(C+W+G)+E assembly", 8, false);
 
-	factory[11] = create_workstation("Aircraft painting", 4, false);
-	factory[12] = create_workstation("Aircraft testing", 5, false);
+	factory[11] = create_workstation("Aircraft painting", 10, false);
+	factory[12] = create_workstation("Aircraft testing", 10, false);
 
 	// Creates customer (special workstation)
 	customer = create_workstation("Customer", 0, true);
