@@ -13,10 +13,13 @@
 
 
 // Other configurations
-#define NB_WORKSTATIONS				13
+#define NB_WORKSTATIONS				7
 
 #define TIMELINE_EVENTS_CAPACITY	50
 #define FINAL_CONTAINERS_CAPACITY	100
+
+// factor for each workstation work time (here 100ms)
+#define WORKTIMEFACTOR	1000000
 
 
 #endif

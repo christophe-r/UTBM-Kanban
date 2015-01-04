@@ -4,6 +4,7 @@
 #define __MYWORKSTATION__
 #include "structures.h"
 
+void start_factory();
 
 Workstation *create_workstation(char *name, unsigned short int processDelay, bool launcher);
 void *workstation_thread(void *p_data);
