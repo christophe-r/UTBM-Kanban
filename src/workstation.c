@@ -14,8 +14,14 @@
 Resource *FinalContainers[FINAL_CONTAINERS_CAPACITY]; // save finished items
 bool factoryState = false;
 
+pthread_mutex_t mutex_factoryState;
+
+
+
 void start_factory(){
+	pthread_mutex_lock(&mutex_factoryState);
 	factoryState = true;
+	pthread_mutex_unlock(&mutex_factoryState);
 }
 
 
@@ -128,10 +134,12 @@ void *workstation_thread(void *p_data){
 	
 	int RemainingResourcesInKanban = 0;
 
-	while(factoryState == false){
+	pthread_mutex_lock(&mutex_factoryState);
+	while( factoryState == false ){
+		pthread_mutex_unlock(&mutex_factoryState);
 		usleep(100000);
 	}
-	consoleLog(thisWS, "enable workstation...");
+	consoleLog(thisWS, "Workstation enabled...");
 
 	// optimize workstation (allways full)
 	int nbEmptyContainers0 = 2 - count_full_container(thisWS->containers0);
@@ -229,7 +237,7 @@ void *workstation_thread(void *p_data){
 		pthread_mutex_unlock(&(thisWS->mutex_EmptyContainers)); // end of the critical part
 
 		consoleLog(thisWS, "\e[91mWorking...\e[39m");
-		usleep(thisWS->processDelay * WORKTIMEFACTOR); // simulates the time of the production
+		usleep(thisWS->processDelay * WORKTIME_SCALE); // simulates the time of the production
 		RemainingResourcesInKanban--;
 
 		// consoleLog(thisWS, "lock mutex_FullContainers");

@@ -4,6 +4,7 @@
 
 #include "simulation.h"
 
+
 int main(void) {
 
 	signal(SIGINT, sigintHandler);

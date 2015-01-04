@@ -21,6 +21,8 @@ TimeLineEvent *userTimeline[TIMELINE_EVENTS_CAPACITY]; // Timeline
 pthread_t timeline;
 bool simulationStarted = false;
 
+extern pthread_mutex_t mutex_factoryState;
+
 extern Resource *FinalContainers[]; // From workstation.c
 
 void sigintHandler(int sig_num){
@@ -71,13 +73,24 @@ void runSimulation() {
 	printf("Building factory...\n");
 	simulationStarted = true;
 
-	// Here you have 2 predefined factory enable one or the other or create your own :
-	// if you change the numbers of workstation don't forget to mark it in config.h
-	build_debug_factory(); // 7 worksation
-	// build_planes_factory(); // 13 worksation
+	pthread_mutex_init(&mutex_factoryState, 0);
 
-	// launch factory
+	/* Here you have 3 predefined factories. You can choose which one to simulate:
+	 *  - Debug factory   : Factory used to debug our project.
+	 *  - Sample factory  : A simple factory with only 3 workstations designed to understand during the defense.
+	 *  - Aircraft factory: Our real project factory.
+	 *
+	 * Do not uncomment several factories at the same time.
+	 * Do not forget to change the define NB_WORKSTATIONS in config.h. Put the corresponding number of workstations.
+	*/
+	//build_debug_factory(); // 7 worksations
+	//build_sample_factory(); // 3 worksations
+	build_aircraft_factory(); // 13 worksations
+
+	// Launches the factory
 	start_factory();
+
+	pthread_mutex_destroy(&mutex_factoryState);
 
 	// Creates the timeline
 	pthread_create(&timeline, 0, &timeline_thread, (void *) customer);
@@ -140,15 +153,15 @@ void buildTimeline(){
 	
 }
 
-// create your own factory here ...
+// Create your own factory here...
 
 void build_debug_factory(){
 
-	if (NB_WORKSTATIONS != 7)
-	{
+	if( NB_WORKSTATIONS != 7 ){
 		printf("\e[7m[error] The number of workstation is invalid (%d!=13) change it in config.h\e[27m\n", NB_WORKSTATIONS);
 		exit(EXIT_FAILURE);
 	}
+
 	// Creates each workstation  
 	factory[0] = create_workstation("Workstation up     1.1", 2, false);
 	factory[1] = create_workstation("Workstation up     1.2", 3, false);
@@ -173,13 +186,37 @@ void build_debug_factory(){
 	link_workstations(customer, factory[6]); // Customer -> Workstation down   0
 }
 
-void build_planes_factory(){
 
-	if (NB_WORKSTATIONS != 13)
-	{
-		printf("\e[7m[error] The number of workstation (NB_WORKSTATIONS) is invalid (%d!=13) change it in config.h\e[27m\n", NB_WORKSTATIONS);
+void build_sample_factory(){
+
+	if (NB_WORKSTATIONS != 3 ){
+		printf("\e[7m[error] The number of workstation is invalid (%d!=3) change it in config.h\e[27m\n", NB_WORKSTATIONS);
 		exit(EXIT_FAILURE);
 	}
+
+	// Creates each workstation  
+	factory[0] = create_workstation("Amont 0", 2, false);
+	factory[1] = create_workstation("Amont 1", 3, false);
+	factory[2] = create_workstation(" Aval  ", 4, false);
+
+	// Creates customer (special workstation)
+	customer = create_workstation("Customer", 0, true);
+
+	// Linking the workstations each others
+	link_workstations(factory[2], factory[0]);
+	link_workstations(factory[2], factory[1]);
+
+	// Linking the customer to the final workstation
+	link_workstations(customer, factory[2]);
+}
+
+void build_aircraft_factory(){
+
+	if( NB_WORKSTATIONS != 13 ){
+		printf("\e[7m[error] The number of workstations (NB_WORKSTATIONS) is invalid (%d!=13) change it in config.h\e[27m\n", NB_WORKSTATIONS);
+		exit(EXIT_FAILURE);
+	}
+
 	// Creates each workstation  
 	factory[0] = create_workstation("Cabin parts", 5, false);
 	factory[1] = create_workstation("Wings parts", 8, false);
@@ -234,14 +271,13 @@ void *timeline_thread(void *p_data){
 	printf("\e[7mLaunching timeline...\e[27m\n");
 
 	while( userTimeline[i] != NULL ){
-		if (userTimeline[i]->WaitingTime >100)
-		{
-			printf("\e[7mAlert : temp d'attente : %d\e[27m\n",userTimeline[i]->WaitingTime);
-			printf("\e[7mAlert : i :%d\e[27m\n",i);
+		if( userTimeline[i]->WaitingTime > 100){
+			printf("\e[7mAlert: Waiting time: %ds\e[27m\n", userTimeline[i]->WaitingTime);
+			printf("\e[7mAlert: i: %d\e[27m\n", i);
 		}
 
 		usleep(userTimeline[i]->WaitingTime * 1000000);
-		printf("\e[7mtramsmits kanban...\e[27m\n");
+		printf("\e[7mTransmitting kanban to customer...\e[27m\n");
 		send_kanban(customer, customer->containers0, customer, userTimeline[i]->KanbanQuantity); // tramsmits kanban to customer thread
 		pthread_cond_signal(&(customer->cond_EmptyContainers)); // wakes up customer thread
 		i++;

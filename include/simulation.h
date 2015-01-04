@@ -8,7 +8,8 @@ void runSimulation();
 void buildTimeline();
 
 void build_debug_factory();
-void build_planes_factory();
+void build_sample_factory();
+void build_aircraft_factory();
 
 void *timeline_thread(void *p_data);
 void getUserEntry(char *txt, int *value);
