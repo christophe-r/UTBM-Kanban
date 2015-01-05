@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <kanban.h>
+
+#include "kanban.h"
 
 /***** Kanban ******/
 Kanban *create_kanban(Workstation *from, Resource *fromContainerID[], Workstation *to, int nbResources){

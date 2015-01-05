@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <pthread.h>
 #include <signal.h>
 
@@ -122,8 +123,8 @@ void buildTimeline(){
 		printf("Launching the default timeline\n");
 		userTimeline[0] = addEventToTimeline(10, 2);
 		userTimeline[1] = addEventToTimeline(3, 3);
-		// userTimeline[2] = addEventToTimeline(4, 1);
-		// userTimeline[3] = addEventToTimeline(6, 2);
+		userTimeline[2] = addEventToTimeline(4, 1);
+		userTimeline[3] = addEventToTimeline(6, 2);
 		userTimeline[4] = NULL;
 
 	} else {

@@ -1,5 +1,3 @@
-#include <stdbool.h>
-
 #ifndef __MYFACTORY__
 #define __MYFACTORY__
 #include "structures.h"
